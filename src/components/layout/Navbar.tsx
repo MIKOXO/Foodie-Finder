@@ -17,7 +17,8 @@ const Navbar = () => {
     const isCategoriesActive =
       to === "/categories" &&
       (currentPath.startsWith("/categories") ||
-        currentPath.startsWith("/meal/"));
+        currentPath.startsWith("/meal/") ||
+        currentPath.startsWith("/category/"));
 
     if (isActive || isCategoriesActive) {
       return "px-6 py-2 rounded-[8px] bg-primary text-white";

@@ -11,7 +11,7 @@ export interface Meal {
   strCategory: string;
   strInstructions: string;
   strYoutube: string;
-  [key: string]: any; // to access strIngredient1...strMeasure1...
+  [key: string]: any;
 }
 
 export const fetchMeals = async () => {

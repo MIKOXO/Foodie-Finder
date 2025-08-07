@@ -6,14 +6,18 @@ import MealCard from "@/components/meal/MealCard";
 import { Button } from "@/components/ui/button";
 import { LuChefHat, LuGlobe, LuUtensils, LuShuffle } from "react-icons/lu";
 import { Meal, fetchMeals } from "@/services/mealApi";
+import LoadingSpinner from "@/components/custom/LoadingSpinner";
 
 const HomePage = () => {
   const [meals, setMeals] = useState<Meal[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const getData = async () => {
+      setLoading(true);
       const data = await fetchMeals();
       setMeals(data);
+      setLoading(false);
     };
     getData();
   }, []);
@@ -83,11 +87,17 @@ const HomePage = () => {
           <h1 className="text-[28px] font-semibold mb-7">Featured Recipes</h1>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-7">
-          {meals.map((meal) => (
-            <MealCard key={meal.idMeal} meal={meal} />
-          ))}
-        </div>
+        {loading ? (
+          <div className="flex justify-center items-center h-64">
+            <LoadingSpinner />
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-7">
+            {meals.map((meal) => (
+              <MealCard key={meal.idMeal} meal={meal} />
+            ))}
+          </div>
+        )}
       </section>
     </main>
   );

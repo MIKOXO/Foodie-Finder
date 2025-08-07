@@ -8,6 +8,7 @@ import { Meal } from "@/services/mealApi";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { LuArrowLeft, LuUsers, LuClock } from "react-icons/lu";
+import LoadingSpinner from "@/components/custom/LoadingSpinner";
 
 const MealDetailPage = () => {
   const { id } = useParams();
@@ -23,7 +24,7 @@ const MealDetailPage = () => {
     fetchMeal();
   }, [id]);
 
-  if (!meal) return <p className="text-center mt-10">Loading...</p>;
+  if (!meal) return <LoadingSpinner />;
 
   const ingredients = Object.entries(meal)
     .filter(([key, value]) => key.startsWith("strIngredient") && value)

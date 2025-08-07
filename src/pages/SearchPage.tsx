@@ -5,14 +5,23 @@ import { Meal } from "@/services/mealApi";
 import MealCard from "@/components/meal/MealCard";
 import SearchBar from "@/components/search/SearchBar";
 import { LuUtensils } from "react-icons/lu";
+import LoadingSpinner from "@/components/custom/LoadingSpinner";
 
 const SearchPage = () => {
   const [meals, setMeals] = useState<Meal[]>([]);
   const [loading, setLoading] = useState(false);
   const [searched, setSearched] = useState(false);
+  const [error, setError] = useState("");
 
   const handleSearch = async (query: string, filter: string) => {
-    if (!query.trim()) return;
+    setError("");
+
+    if (!query.trim()) {
+      setError("Please enter a search term.");
+      setMeals([]);
+      setSearched(false);
+      return;
+    }
 
     setLoading(true);
     setSearched(true);
@@ -37,21 +46,40 @@ const SearchPage = () => {
       case "ingredient":
         url = `https://www.themealdb.com/api/json/v1/1/filter.php?i=${searchQuery}`;
         break;
+      default:
+        setError("Invalid filter selected.");
+        setLoading(false);
+        return;
     }
 
-    axios
-      .get(url)
-      .then((res) => {
-        setMeals(res.data.meals || []);
-      })
-      .catch((err) => {
-        console.error("Search error:", err);
+    try {
+      const res = await axios.get(url);
+      const results = res.data.meals;
+
+      if (!results) {
         setMeals([]);
-      })
-      .finally(() => {
-        setLoading(false);
-      });
+        setError(`No results found for "${searchQuery}".`);
+      } else {
+        setMeals(results);
+      }
+    } catch (err) {
+      console.error("Search error:", err);
+      setMeals([]);
+      setError("Something went wrong. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
+
+  React.useEffect(() => {
+    if (error) {
+      const timeout = setTimeout(() => {
+        setError("");
+      }, 3000);
+
+      return () => clearTimeout(timeout);
+    }
+  }, [error]);
 
   return (
     <section className="mx-auto container p-6">
@@ -65,10 +93,15 @@ const SearchPage = () => {
       <div className="flex flex-col items-center">
         <div>
           <SearchBar onSearch={handleSearch} />
+          {error && (
+            <div className="mt-4 bg-red-200 border border-red-500 p-4 rounded-xl text-red-500 text-center font-medium">
+              {error}
+            </div>
+          )}
         </div>
         <div className="mt-16">
           {loading ? (
-            <p className="text-center text-muted-foreground">Searching...</p>
+            <LoadingSpinner />
           ) : searched ? (
             meals.length > 0 ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">

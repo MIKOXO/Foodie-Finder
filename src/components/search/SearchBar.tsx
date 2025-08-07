@@ -29,6 +29,7 @@ const SearchBar = ({ onSearch, initialFilter = "name" }: SearchBarProps) => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault(); //
     handleSearch();
+    // onSearch(query, filter);
   };
 
   return (

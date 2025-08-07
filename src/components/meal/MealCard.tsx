@@ -11,6 +11,21 @@ interface MealCardProps {
 }
 
 const MealCard = ({ meal }: MealCardProps) => {
+  const [favorites, setFavorites] = React.useState<string[]>(() =>
+    JSON.parse(localStorage.getItem("favorites") || "[]")
+  );
+
+  const handleFavorite = (mealId: string) => {
+    setFavorites((prev) =>
+      prev.includes(mealId)
+        ? prev.filter((id) => id !== mealId)
+        : [...prev, mealId]
+    );
+  };
+  React.useEffect(() => {
+    localStorage.setItem("favorites", JSON.stringify(favorites));
+  }, [favorites]);
+
   return (
     <Card>
       <div className="">
@@ -31,7 +46,21 @@ const MealCard = ({ meal }: MealCardProps) => {
             </Badge>
           )}
 
-          <LuHeart />
+          <button
+            onClick={() => {
+              handleFavorite(meal.idMeal);
+            }}
+            className={` pb-3 text-md text-right cursor-pointer ${
+              favorites.includes(meal.idMeal) ? "text-red-500" : "text-gray-400"
+            }`}
+            title="Add to Favorites"
+          >
+            {favorites.includes(meal.idMeal) ? (
+              <LuHeart fill="red" />
+            ) : (
+              <LuHeart fill="none" />
+            )}
+          </button>
         </div>
 
         <div className="my-3">
